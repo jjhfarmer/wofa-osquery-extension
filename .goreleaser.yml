@@ -1,0 +1,51 @@
+version: 2
+
+project_name: wofa-osquery-extension
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - id: wofa-extension
+    main: .
+    binary: wofa_extension
+    goos:
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w
+      - -X main.Version={{.Version}}
+
+archives:
+  - id: wofa-extension
+    builds:
+      - wofa-extension
+    name_template: "wofa_extension_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    format: zip
+    files:
+      - LICENSE
+      - README.md
+
+checksum:
+  name_template: "checksums.txt"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^chore:"
+      - Merge pull request
+      - Merge branch
+
+release:
+  github:
+    owner: jjhfarmer
+    name: wofa-osquery-extension
+  name_template: "v{{.Version}}"
+  draft: false
+  prerelease: auto
