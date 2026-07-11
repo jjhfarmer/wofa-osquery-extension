@@ -153,7 +153,7 @@ See the existing `tables/wofa/` package as a reference.
 
 ## Data source
 
-All data comes from [WOFA](https://wofa.dev), a community project by @Josh-Tucker that aggregates data from:
+All data comes from [WOFA](https://wofa.dev), a community project by [@Josh-Tucker](https://github.com/Josh-Tucker) that aggregates data from::
 
 - [Microsoft Security Response Center (MSRC) CVRF API](https://api.msrc.microsoft.com/)
 - [CISA Known Exploited Vulnerabilities catalog](https://www.cisa.gov/known-exploited-vulnerabilities-catalog)
