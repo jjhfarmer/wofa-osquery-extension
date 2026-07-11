@@ -1,0 +1,98 @@
+{
+  "Version": "1.0",
+  "UpdateHash": "abc123def456",
+  "LastCheck": "2025-03-12T06:00:00+00:00",
+  "OSVersions": [
+    {
+      "OSVersion": "Windows 11 24H2",
+      "SupportEndDate": {
+        "HomePro": "2026-10-13",
+        "EnterpriseEducation": "2027-10-13"
+      },
+      "Latest": {
+        "ReleaseDate": "2025-03-11",
+        "ProductVersion": "10.0.26100.3476",
+        "SecurityInfo": "https://support.microsoft.com/help/5053598",
+        "UniqueCVEsCount": 41,
+        "ActivelyExploitedCVEs": ["CVE-2025-24985", "CVE-2025-24993"]
+      },
+      "SecurityReleases": [
+        {
+          "UpdateName": "2025-03 Cumulative Update for Windows 11 (KB5053598)",
+          "ReleaseDate": "2025-03-11",
+          "ProductVersion": "10.0.26100.3476",
+          "SecurityInfo": "https://support.microsoft.com/help/5053598",
+          "CVEs": {
+            "CVE-2025-24985": {
+              "severity": "Important",
+              "cvss_score": 7.8,
+              "actively_exploited": true,
+              "in_kev": true,
+              "nist_url": "https://nvd.nist.gov/vuln/detail/CVE-2025-24985"
+            },
+            "CVE-2025-24993": {
+              "severity": "Critical",
+              "cvss_score": 9.1,
+              "actively_exploited": true,
+              "in_kev": false,
+              "nist_url": "https://nvd.nist.gov/vuln/detail/CVE-2025-24993"
+            }
+          },
+          "ActivelyExploitedCVEs": ["CVE-2025-24985", "CVE-2025-24993"],
+          "UniqueCVEsCount": 41,
+          "DaysSincePreviousRelease": 28,
+          "Supersedes": "5051987",
+          "PatchTuesdayRelease": true
+        },
+        {
+          "UpdateName": "2025-02 Cumulative Update for Windows 11 (KB5051987)",
+          "ReleaseDate": "2025-02-11",
+          "ProductVersion": "10.0.26100.3194",
+          "SecurityInfo": "https://support.microsoft.com/help/5051987",
+          "CVEs": {},
+          "ActivelyExploitedCVEs": [],
+          "UniqueCVEsCount": 35,
+          "DaysSincePreviousRelease": 28,
+          "Supersedes": "5050009",
+          "PatchTuesdayRelease": true
+        }
+      ]
+    },
+    {
+      "OSVersion": "Windows 10 22H2",
+      "SupportEndDate": {
+        "HomePro": "",
+        "EnterpriseEducation": "2025-10-14"
+      },
+      "Latest": {
+        "ReleaseDate": "2025-03-11",
+        "ProductVersion": "10.0.19045.5487",
+        "SecurityInfo": "https://support.microsoft.com/help/5053606",
+        "UniqueCVEsCount": 38,
+        "ActivelyExploitedCVEs": ["CVE-2025-24985"]
+      },
+      "SecurityReleases": [
+        {
+          "UpdateName": "2025-03 Cumulative Update for Windows 10 (KB5053606)",
+          "ReleaseDate": "2025-03-11",
+          "ProductVersion": "10.0.19045.5487",
+          "SecurityInfo": "https://support.microsoft.com/help/5053606",
+          "CVEs": {
+            "CVE-2025-24985": {
+              "severity": "Important",
+              "cvss_score": 7.8,
+              "actively_exploited": true,
+              "in_kev": true,
+              "nist_url": "https://nvd.nist.gov/vuln/detail/CVE-2025-24985"
+            }
+          },
+          "ActivelyExploitedCVEs": ["CVE-2025-24985"],
+          "UniqueCVEsCount": 38,
+          "DaysSincePreviousRelease": 28,
+          "Supersedes": "5050001",
+          "PatchTuesdayRelease": true
+        }
+      ]
+    }
+  ]
+}
