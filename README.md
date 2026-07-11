@@ -80,6 +80,132 @@ SELECT * FROM wofa_unpatched_cves WHERE os_version = '10.0.26100.3000';
 
 ---
 
+## Example Usage
+
+### 1. Retrieve Full Device Context
+
+Joins your CVEs with the device's own identity. Makes it immediately clear "this machine, running this hardware, is missing these specific patches"
+
+```sql
+SELECT
+    s.computer_name,
+    s.hardware_model,
+    o.name AS windows_edition,
+    o.version AS current_build,
+    c.cve_id,
+    c.severity,
+    c.cvss_score,
+    c.in_kev,
+    c.patched_in_version,
+    c.nist_url
+FROM wofa_unpatched_cves c
+JOIN system_info s ON 1=1
+JOIN os_version o ON 1=1
+ORDER BY c.in_kev DESC, CAST(c.cvss_score AS REAL) DESC;
+
++----------------+----------------+--------------------------+---------------+----------------+-----------+------------+--------+--------------------+--------------------------------------------------+
+| computer_name  | hardware_model | windows_edition          | current_build | cve_id         | severity  | cvss_score | in_kev | patched_in_version | nist_url                                         |
++----------------+----------------+--------------------------+---------------+----------------+-----------+------------+--------+--------------------+--------------------------------------------------+
+| DESKTOP-SQ49GE1| MS-7B86        | Microsoft Windows 11 Pro | 10.0.26200    | CVE-2026-21510 | Important | 8.8        | 1      | 10.0.26200.7840    | https://nvd.nist.gov/vuln/detail/CVE-2026-21510 |
+| DESKTOP-SQ49GE1| MS-7B86        | Microsoft Windows 11 Pro | 10.0.26200    | CVE-2026-21513 | Important | 8.8        | 1      | 10.0.26200.7840    | https://nvd.nist.gov/vuln/detail/CVE-2026-21513 |
+| DESKTOP-SQ49GE1| MS-7B86        | Microsoft Windows 11 Pro | 10.0.26200    | CVE-2026-21519 | Important | 7.8        | 1      | 10.0.26200.7840    | https://nvd.nist.gov/vuln/detail/CVE-2026-21519 |
+| DESKTOP-SQ49GE1| MS-7B86        | Microsoft Windows 11 Pro | 10.0.26200    | CVE-2026-21533 | Important | 7.8        | 1      | 10.0.26200.7840    | https://nvd.nist.gov/vuln/detail/CVE-2026-21533 |
+| DESKTOP-SQ49GE1| MS-7B86        | Microsoft Windows 11 Pro | 10.0.26200    | CVE-2026-22221 | Important | 7.8        | 1      | 10.0.26200.7462    | https://nvd.nist.gov/vuln/detail/CVE-2026-22221 |
+| DESKTOP-SQ49GE1| MS-7B86        | Microsoft Windows 11 Pro | 10.0.26200    | CVE-2025-60710 | Important | 7.8        | 1      | 10.0.26200.7171    | https://nvd.nist.gov/vuln/detail/CVE-2025-60710 |
+| DESKTOP-SQ49GE1| MS-7B86        | Microsoft Windows 11 Pro | 10.0.26200    | CVE-2025-24990 | Important | 7.8        | 1      | 10.0.26200.6899    | https://nvd.nist.gov/vuln/detail/CVE-2025-24990 |
+| DESKTOP-SQ49GE1| MS-7B86        | Microsoft Windows 11 Pro | 10.0.26200    | CVE-2025-59230 | Important | 7.8        | 1      | 10.0.26200.6899    | https://nvd.nist.gov/vuln/detail/CVE-2025-59230 |
+| DESKTOP-SQ49GE1| MS-7B86        | Microsoft Windows 11 Pro | 10.0.26200    | CVE-2025-62215 | Important | 7.0        | 1      | 10.0.26200.7171    | https://nvd.nist.gov/vuln/detail/CVE-2025-62215 |
+| DESKTOP-SQ49GE1| MS-7B86        | Microsoft Windows 11 Pro | 10.0.26200    | CVE-2026-21525 | Moderate  | 6.2        | 1      | 10.0.26200.7840    | https://nvd.nist.gov/vuln/detail/CVE-2026-21525 |
+| DESKTOP-SQ49GE1| MS-7B86        | Microsoft Windows 11 Pro | 10.0.26200    | CVE-2026-20805 | Important | 5.5        | 1      | 10.0.26200.7623    | https://nvd.nist.gov/vuln/detail/CVE-2026-20805 |
+| DESKTOP-SQ49GE1| MS-7B86        | Microsoft Windows 11 Pro | 10.0.26200    | CVE-2025-47827 | Important | 4.6        | 1      | 10.0.26200.6899    | https://nvd.nist.gov/vuln/detail/CVE-2025-47827 |
+| DESKTOP-SQ49GE1| MS-7B86        | Microsoft Windows 11 Pro | 10.0.26200    | CVE-2026-32202 | Important | 4.3        | 1      | 10.0.26200.8246    | https://nvd.nist.gov/vuln/detail/CVE-2026-32202 |
++----------------+----------------+--------------------------+---------------+----------------+-----------+------------+--------+--------------------+--------------------------------------------------+
+```
+
+### 2. How Long Has This Fix Been Available?
+
+Shows exactly how many months behind a device is
+
+```sql
+SELECT
+    c.cve_id,
+    c.severity,
+    c.cvss_score,
+    c.in_kev,
+    r.release_date AS patch_available_since,
+    r.update_name
+FROM wofa_unpatched_cves c
+JOIN wofa_security_release_info r
+    ON r.os_version = c.os_version
+    AND r.product_version = c.patched_in_version
+ORDER BY r.release_date ASC;
+
++----------------+-----------+------------+--------+-----------------------+-------------------------------------------------------------------+
+| cve_id         | severity  | cvss_score | in_kev | patch_available_since | update_name                                                       |
++----------------+-----------+------------+--------+-----------------------+-------------------------------------------------------------------+
+| CVE-2026-20805 | Important | 5.5        | 1      | 2025-07-08            | Windows 11 25H2 - July 2025 Security Update (KB5074109)           |
+| CVE-2025-24990 | Important | 7.8        | 1      | 2025-10-14            | Windows 11 25H2 - October 2025 Security Update (KB5066835)        |
+| CVE-2025-47827 | Important | 4.6        | 1      | 2025-10-14            | Windows 11 25H2 - October 2025 Security Update (KB5066835)        |
+| CVE-2025-59230 | Important | 7.8        | 1      | 2025-10-14            | Windows 11 25H2 - October 2025 Security Update (KB5066835)        |
+| CVE-2025-60710 | Important | 7.8        | 1      | 2025-11-11            | Windows 11 25H2 - November 2025 Security Update (KB5068861)       |
+| CVE-2025-62215 | Important | 7.0        | 1      | 2025-11-11            | Windows 11 25H2 - November 2025 Security Update (KB5068861)       |
+| CVE-2026-22221 | Important | 7.8        | 1      | 2025-12-09            | Windows 11 25H2 - December 2025 Security Update (KB5072033)       |
+| CVE-2026-20805 | Important | 5.5        | 1      | 2026-01-13            | Windows 11 25H2 - January 2026 Security Update (KB5074109)        |
+| CVE-2026-21510 | Important | 8.8        | 1      | 2026-02-10            | Windows 11 25H2 - February 2026 Security Update (KB5077181)       |
+| CVE-2026-21513 | Important | 8.8        | 1      | 2026-02-10            | Windows 11 25H2 - February 2026 Security Update (KB5077181)       |
+| CVE-2026-21519 | Important | 7.8        | 1      | 2026-02-10            | Windows 11 25H2 - February 2026 Security Update (KB5077181)       |
+| CVE-2026-21525 | Moderate  | 6.2        | 1      | 2026-02-10            | Windows 11 25H2 - February 2026 Security Update (KB5077181)       |
+| CVE-2026-21533 | Important | 7.8        | 1      | 2026-02-10            | Windows 11 25H2 - February 2026 Security Update (KB5077181)       |
+| CVE-2026-32202 | Important | 4.3        | 1      | 2026-04-14            | Windows 11 25H2 - April 2026 Security Update (KB5083769)          |
++----------------+-----------+------------+--------+-----------------------+-------------------------------------------------------------------+
+```
+
+### 3. Find the triage priorities
+
+KEV entries are confirmed exploited in the wild.
+
+```sql
+SELECT
+    cve_id,
+    severity,
+    cvss_score,
+    patched_in_version,
+    nist_url
+FROM wofa_unpatched_cves
+WHERE in_kev = 1
+ORDER BY CAST(cvss_score AS REAL) DESC;
+
++----------------+-----------+------------+--------------------+--------------------------------------------------+
+| cve_id         | severity  | cvss_score | patched_in_version | nist_url                                         |
++----------------+-----------+------------+--------------------+--------------------------------------------------+
+| CVE-2026-21510 | Important | 8.8        | 10.0.26200.7840    | https://nvd.nist.gov/vuln/detail/CVE-2026-21510 |
+| CVE-2026-21513 | Important | 8.8        | 10.0.26200.7840    | https://nvd.nist.gov/vuln/detail/CVE-2026-21513 |
+| CVE-2026-21519 | Important | 7.8        | 10.0.26200.7840    | https://nvd.nist.gov/vuln/detail/CVE-2026-21519 |
+| CVE-2026-21533 | Important | 7.8        | 10.0.26200.7840    | https://nvd.nist.gov/vuln/detail/CVE-2026-21533 |
+| CVE-2026-22221 | Important | 7.8        | 10.0.26200.7462    | https://nvd.nist.gov/vuln/detail/CVE-2026-22221 |
+| CVE-2025-60710 | Important | 7.8        | 10.0.26200.7171    | https://nvd.nist.gov/vuln/detail/CVE-2025-60710 |
+| CVE-2025-24990 | Important | 7.8        | 10.0.26200.6899    | https://nvd.nist.gov/vuln/detail/CVE-2025-24990 |
+| CVE-2025-59230 | Important | 7.8        | 10.0.26200.6899    | https://nvd.nist.gov/vuln/detail/CVE-2025-59230 |
+| CVE-2025-62215 | Important | 7.0        | 10.0.26200.7171    | https://nvd.nist.gov/vuln/detail/CVE-2025-62215 |
+| CVE-2026-21525 | Moderate  | 6.2        | 10.0.26200.7840    | https://nvd.nist.gov/vuln/detail/CVE-2026-21525 |
+| CVE-2026-20805 | Important | 5.5        | 10.0.26200.7623    | https://nvd.nist.gov/vuln/detail/CVE-2026-20805 |
+| CVE-2025-47827 | Important | 4.6        | 10.0.26200.6899    | https://nvd.nist.gov/vuln/detail/CVE-2025-47827 |
+| CVE-2026-32202 | Important | 4.3        | 10.0.26200.8246    | https://nvd.nist.gov/vuln/detail/CVE-2026-32202 |
++----------------+-----------+------------+--------------------+--------------------------------------------------+
+```
+
+### 4. (Optional) Turn response into an operational FleetDM Policy
+
+```sql
+SELECT 1 FROM wofa_unpatched_cves WHERE in_kev = 1 LIMIT 1;
+
++---+
+| 1 |
++---+
+| 1 |
++---+
+```
+
 ## Installation
 
 ### Pre-built binary
